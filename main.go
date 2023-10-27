@@ -4,6 +4,6 @@ import "fmt"
 
 func main() {
 	x := 2
-	x++
-	fmt.Println("Hello, world!")
+	x *= 2
+	fmt.Println(x, "Hello, world!")
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -11,8 +10,8 @@ func main() {
 }
 
 func div(a float64, b float64) (float64, error) {
-	if b == 0 {
-		return 0, errors.New("Division by zero!")
-	}
+	//if b == 0 {
+	//	return 0, errors.New("Division by zero!")
+	//}
 	return a / b, nil
 }

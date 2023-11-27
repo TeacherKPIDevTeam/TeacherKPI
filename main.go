@@ -2,21 +2,21 @@ package main
 
 import (
 	"errors"
-	"fmt"
+	"log"
+	"net/http"
 
 	"github.com/TeacherKPIDevTeam/TeacherKPI/model"
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	testTask := model.Task{Id: 0}
-	testTask.AddStage(model.Stage{QueuePos: 1})
-	testTask.AddStage(model.Stage{QueuePos: 2})
-	testTask.AddStage(model.Stage{QueuePos: 0})
-	testTask.AddStage(model.Stage{QueuePos: 4})
-	testTask.AddStage(model.Stage{QueuePos: 3})
-
-	divResult, _ := div(5, 2)
-	fmt.Println(divResult, "Hello, world!")
+	router := mux.NewRouter()
+	router.HandleFunc("/task", model.GetTask).Methods("GET")
+	router.HandleFunc("/task/{id}", model.GetTaskById).Methods("GET")
+	//r.HandleFunc("/task", createBook).Methods("POST")
+	//r.HandleFunc("/task/{id}", updateBook).Methods("PUT")
+	//r.HandleFunc("/task/{id}", deleteBook).Methods("DELETE")
+	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
 func div(a float64, b float64) (float64, error) {

@@ -85,16 +85,16 @@ delete from tasks where TaskID = 2; -- удалим запись с ID 2
 -- For Stage
 insert into stages values(10, 'Имя стадии');
 delete from stages where StageID = 4; -- Удаление по ID
-select * from stages where StageID = 4;
+select * from stages where StageID = 4; -- Вывод по StageID
 select Stage from tasks where TaskID = 3; -- Получение Stage от имени ID ??
 UPDATE Stage SET StageName = 'Тестовое состояние' where StageID = 3 -- Обновление имени состояния
 
 -- For TaskType
-insert into tasktypes values (10, 'TaskTypeName');
-select * from tasktypes where TypeID = 4;
-delete from tasktypes where TypeID = 4;
+insert into tasktypes values (10, 'TaskTypeName'); -- Вставка данных
+select * from tasktypes where TypeID = 4; -- Вывод по TypeID
+delete from tasktypes where TypeID = 4; -- Удаление по TypeID
 
 -- For StageType
-insert into stagetypes values (10, 'StageTypeName');
-select * from stagetypes where TypeID = 4;
-delete from stagetypes where TypeID = 4;
+insert into stagetypes values (10, 'StageTypeName'); -- Вставка
+select * from stagetypes where TypeID = 4; -- Выборка по TypeID
+delete from stagetypes where TypeID = 4; -- Удаление по TypeID

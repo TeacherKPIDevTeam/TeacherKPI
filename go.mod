@@ -1,4 +1,4 @@
-module github.com/TeacherKPIDevTeam/TeacherKPI
+module TeacherKPI
 
 go 1.21
 

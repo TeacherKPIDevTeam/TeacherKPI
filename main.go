@@ -5,7 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/TeacherKPIDevTeam/TeacherKPI/model"
+	"TeacherKPI/model"
+
 	"github.com/gorilla/mux"
 )
 
@@ -13,6 +14,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/task", model.GetTask).Methods("GET")
 	router.HandleFunc("/task/{id}", model.GetTaskById).Methods("GET")
+	router.HandleFunc("/user/{id}", model.GetUserById).Methods("GET")
 	//r.HandleFunc("/task", createBook).Methods("POST")
 	//r.HandleFunc("/task/{id}", updateBook).Methods("PUT")
 	//r.HandleFunc("/task/{id}", deleteBook).Methods("DELETE")

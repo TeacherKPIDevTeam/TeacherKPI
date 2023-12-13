@@ -40,7 +40,7 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 
 	values := database.GetUserById(id)
 	if values == nil {
-		json.NewEncoder(w).Encode("Error: not found")
+		w.WriteHeader(404)
 		return
 	}
 

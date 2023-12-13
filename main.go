@@ -12,7 +12,8 @@ import (
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc("/task", model.GetTask).Methods("GET")
+	router.HandleFunc("/tasks", model.GetTasksByUser).Methods("GET")
+	router.HandleFunc("/user/{id}/tasks", model.GetTasksByUser).Methods("GET")
 	router.HandleFunc("/task/{id}", model.GetTaskById).Methods("GET")
 	router.HandleFunc("/user/{id}", model.GetUserById).Methods("GET")
 	//r.HandleFunc("/task", createBook).Methods("POST")

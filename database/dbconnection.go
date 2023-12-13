@@ -12,6 +12,7 @@ func RequestQuery(request string, args ...any) *sql.Rows {
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/teacher_kpi")
 
 	if err != nil {
+		//Добавить обработчик отсутствия подключения к базе
 		panic(err)
 	}
 	defer db.Close()
@@ -19,7 +20,7 @@ func RequestQuery(request string, args ...any) *sql.Rows {
 	result, err := db.Query(request, args...)
 
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 
 	return result

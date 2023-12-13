@@ -91,7 +91,7 @@ func GetTaskById(w http.ResponseWriter, r *http.Request) {
 	values := database.GetTaskById(id)
 
 	if values == nil {
-		json.NewEncoder(w).Encode("Error: not found")
+		w.WriteHeader(404)
 		return
 	}
 

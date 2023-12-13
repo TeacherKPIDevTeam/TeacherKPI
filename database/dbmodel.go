@@ -2,16 +2,13 @@ package database
 
 func GetUserById(id uint64) map[string]interface{} {
 	response := RequestQuery("SELECT * FROM users WHERE id=?", id)
-	var ret map[string]interface{}
-	if response == nil {
-		return ret
-	}
-
 	response.Next()
 
 	var uid uint64
 	var username string
-	response.Scan(&uid, &username)
+	if err := response.Scan(&uid, &username); err != nil {
+		return nil
+	}
 	return map[string]interface{}{
 		"id":       uid,
 		"username": username,
@@ -20,17 +17,14 @@ func GetUserById(id uint64) map[string]interface{} {
 
 func GetTaskById(id uint64) map[string]interface{} {
 	response := RequestQuery("SELECT * FROM tasks WHERE id=?", id)
-	var ret map[string]interface{}
-	if response == nil {
-		return ret
-	}
-
 	response.Next()
 
 	var uid uint64
 	var userid uint64
 	var tasktypeid uint64
-	response.Scan(&uid, &userid, &tasktypeid)
+	if err := response.Scan(&uid, &userid, &tasktypeid); err != nil {
+		return nil
+	}
 	return map[string]interface{}{
 		"id":       uid,
 		"owner_id": userid,
@@ -40,10 +34,7 @@ func GetTaskById(id uint64) map[string]interface{} {
 
 func GetTasksByUserId(userId uint64) []interface{} {
 	response := RequestQuery("SELECT * FROM tasks WHERE user_id=?", userId)
-	var ret []interface{} = nil
-	if response == nil {
-		return ret
-	}
+	var ret []interface{}
 
 	var uid uint64
 	var ownerId uint64

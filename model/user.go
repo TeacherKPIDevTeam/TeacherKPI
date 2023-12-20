@@ -14,36 +14,92 @@ import (
 //Реализуем потом
 
 type User struct {
-	UserId   uint64 `json:"id"`
-	Username string `json:"username"`
-	Tasks    []Task `json:"-"`
+	Id       uint64   `json:"id"`
+	Username string   `json:"username"`
+	TasksIds []uint64 `json:"-"`
 	//TODO
 }
 
-func UserFromParamsMap(values map[string]interface{}, useLinkedEntities bool) User {
+var usersCache = map[uint64]*User{}
+
+/*
+
+	РАБОТА С БД
+
+*/
+
+// Преобразовывает данные из базы, полученные через database.GetUserById() в
+// структуру. Вызывается из UserById в случае, если User с нужным id еще не кеширован
+func UserFromParamsMap(values map[string]interface{}) *User {
 	ret := User{
-		UserId:   values["id"].(uint64),
+		Id:       values["id"].(uint64),
 		Username: values["username"].(string),
 	}
+	ret.TasksIds, _ = database.GetTaskIdsByUserId(ret.Id)
 
-	if useLinkedEntities {
-		ret.Tasks = TasksByUserId(ret.UserId)
-	}
-
-	return ret
+	return &ret
 }
 
-func GetUserById(w http.ResponseWriter, r *http.Request) {
+// Метод получения User по id. Пытается извлечь из кеша, если не выходит - обращается к БД
+func UserById(id uint64) (*User, error) {
+	if _, exists := usersCache[id]; !exists {
+		values, err := database.GetUserDataById(id)
+		if err != nil {
+			return nil, err
+		}
+		usersCache[id] = UserFromParamsMap(values)
+	}
+	return usersCache[id], nil
+}
+
+// Создает объект пользователя и сохраняет в базу
+func CreateUser(username string) *User {
+	ret := User{
+		Username: username,
+	}
+	ret.Save()
+	return &ret
+}
+
+// Сохраняет в базу
+func (user *User) Save() {
+	userData := map[string]interface{}{
+		"id":       user.Id,
+		"username": user.Username,
+	}
+	database.SaveUser(userData)
+}
+
+/*
+
+	ГЕТТЕРЫ СЕТТЕРЫ
+
+*/
+
+func (user *User) GetName() string {
+	return user.Username
+}
+func (user *User) SetName(username string) {
+	user.Username = username
+	user.Save()
+}
+
+func (user *User) AddTask(task *Task) {
+	task.UserId = user.Id
+	task.Save()
+}
+
+// HTTP GET
+func HttpGetUserById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	id, _ := strconv.ParseUint(params["id"], 10, 64)
 
-	values := database.GetUserById(id)
-	if values == nil {
+	user, err := UserById(id)
+	if err != nil {
 		w.WriteHeader(404)
 		return
 	}
 
-	user := UserFromParamsMap(values, false)
 	json.NewEncoder(w).Encode(user)
 }

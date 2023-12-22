@@ -69,11 +69,11 @@ func CreateUser(username string) *User {
 	result, _ := database.CreateUser(ret.ToParamsMap())
 	id, _ := result.LastInsertId()
 	ret.Id = uint64(id)
-	usersCache[uint64(id)] = &ret
+	usersCache[ret.Id] = &ret
 	return &ret
 }
 
-// Сохраняет в базу
+// Обновляет пользователя в базе
 func (user *User) Save() {
 	database.SaveUser(user.ToParamsMap())
 }
@@ -94,7 +94,13 @@ func (user *User) SetName(username string) {
 
 func (user *User) AddTask(task *Task) {
 	task.UserId = user.Id
+	user.TasksIds = append(user.TasksIds, task.Id)
 	task.Save()
+}
+
+func (user *User) Tasks() []*Task {
+	tasks, _ := TasksByUserId(user.Id)
+	return tasks
 }
 
 // HTTP GET

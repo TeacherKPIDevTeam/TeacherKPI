@@ -40,6 +40,15 @@ func UserFromParamsMap(values map[string]interface{}) *User {
 	return &ret
 }
 
+func (user *User) ToParamsMap() map[string]interface{} {
+	ret := map[string]interface{}{
+		"id":       user.Id,
+		"username": user.Username,
+	}
+
+	return ret
+}
+
 // Метод получения User по id. Пытается извлечь из кеша, если не выходит - обращается к БД
 func UserById(id uint64) (*User, error) {
 	if _, exists := usersCache[id]; !exists {
@@ -57,17 +66,16 @@ func CreateUser(username string) *User {
 	ret := User{
 		Username: username,
 	}
-	ret.Save()
+	result, _ := database.CreateUser(ret.ToParamsMap())
+	id, _ := result.LastInsertId()
+	ret.Id = uint64(id)
+	usersCache[uint64(id)] = &ret
 	return &ret
 }
 
 // Сохраняет в базу
 func (user *User) Save() {
-	userData := map[string]interface{}{
-		"id":       user.Id,
-		"username": user.Username,
-	}
-	database.SaveUser(userData)
+	database.SaveUser(user.ToParamsMap())
 }
 
 /*
@@ -102,4 +110,18 @@ func HttpGetUserById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(user)
+}
+
+func HttpPostUser(w http.ResponseWriter, r *http.Request) {
+	/*w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	id, _ := strconv.ParseUint(params["id"], 10, 64)
+
+	user, err := UserById(id)
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
+	json.NewEncoder(w).Encode(user)*/
 }

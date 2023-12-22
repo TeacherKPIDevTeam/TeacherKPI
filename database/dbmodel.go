@@ -1,5 +1,7 @@
 package database
 
+import "database/sql"
+
 func GetUserDataById(id uint64) (map[string]interface{}, error) {
 	response, err := RequestQuery("SELECT * FROM users WHERE id=?", id)
 	if err != nil {
@@ -17,6 +19,16 @@ func GetUserDataById(id uint64) (map[string]interface{}, error) {
 		"id":       uid,
 		"username": username,
 	}, nil
+}
+
+func CreateUser(userData map[string]interface{}) (sql.Result, error) {
+	username := userData["username"].(string)
+
+	result, err := RequestNonQuery("INSERT INTO users VALUES(NULL, ?)", username)
+	if err != nil {
+		return nil, err
+	}
+	return result, err
 }
 
 func SaveUser(userData map[string]interface{}) error {

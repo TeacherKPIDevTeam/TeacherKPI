@@ -1,13 +1,7 @@
-package model
+package model2
 
 import (
-	"encoding/json"
-	"net/http"
-	"strconv"
-
-	"TeacherKPI/database"
-
-	"github.com/gorilla/mux"
+	"TeacherKPI/database2"
 )
 
 //BRANCHED
@@ -37,7 +31,7 @@ func UserFromParamsMap(values map[string]interface{}) *User {
 		Id:       values["id"].(uint64),
 		Username: values["username"].(string),
 	}
-	ret.TasksIds, _ = database.GetTaskIdsByUserId(ret.Id)
+	ret.TasksIds, _ = database2.GetTaskIdsByUserId(ret.Id)
 
 	return &ret
 }
@@ -54,7 +48,7 @@ func (user *User) ToParamsMap() map[string]interface{} {
 // Метод получения User по id. Пытается извлечь из кеша, если не выходит - обращается к БД
 func UserById(id uint64) (*User, error) {
 	if _, exists := usersCache[id]; !exists {
-		values, err := database.GetUserDataById(id)
+		values, err := database2.GetUserDataById(id)
 		if err != nil {
 			return nil, err
 		}
@@ -68,7 +62,7 @@ func CreateUser(username string) *User {
 	ret := User{
 		Username: username,
 	}
-	result, _ := database.CreateUser(ret.ToParamsMap())
+	result, _ := database2.CreateUser(ret.ToParamsMap())
 	id, _ := result.LastInsertId()
 	ret.Id = uint64(id)
 	usersCache[ret.Id] = &ret
@@ -77,7 +71,7 @@ func CreateUser(username string) *User {
 
 // Обновляет пользователя в базе
 func (user *User) Save() {
-	database.SaveUser(user.ToParamsMap())
+	database2.SaveUser(user.ToParamsMap())
 }
 
 /*
@@ -94,7 +88,7 @@ func (user *User) SetName(username string) {
 	user.Save()
 }
 
-func (user *User) AddTask(task *Task) {
+/*func (user *User) AddTask(task *Task) {
 	task.UserId = user.Id
 	user.TasksIds = append(user.TasksIds, task.Id)
 	task.Save()
@@ -132,4 +126,4 @@ func HttpPostUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(user)*/
-}
+//}

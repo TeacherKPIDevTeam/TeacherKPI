@@ -1,21 +1,11 @@
 package model
 
-import (
-	"TeacherKPI/database"
-	"encoding/json"
-	"net/http"
-	"strconv"
-	"strings"
-
-	"github.com/gorilla/mux"
-)
-
 //Этап выполнения задачи (Task)
 
 type Stage struct {
-	Id         uint64 `json:"id"`
-	TaskId     uint64 `json:"taskId"`
-	TypeId     uint64 `json:"typeId"` //Индекс типа этапа
+	Id         int    `json:"id"`
+	TaskId     int    `json:"taskId"`
+	TypeId     int    `json:"typeId"` //Индекс типа этапа
 	TypeName   string `json:"typeName"`
 	Status     int    `json:"status"` //Текущий статус
 	StatusName string `json:"statusName"`
@@ -36,58 +26,22 @@ const (
 
 // Преобразовывает данные из базы, полученные через database.GetStageById() в
 // структуру. Вызывается из StageById в случае, если Stage с нужным id еще не кеширован
-func StageFromParamsMap(values map[string]interface{}) *Stage {
-	ret := Stage{
-		Id:         values["id"].(uint64),
-		TaskId:     values["task_id"].(uint64),
-		TypeId:     values["type_id"].(uint64),
-		TypeName:   values["type_name"].(string),
-		Status:     values["status"].(int),
-		QueuePos:   values["queue_pos"].(int),
-		StatusName: values["status_name"].(string),
-	}
 
-	return &ret
-}
+//func StageFromParamsMap(values map[string]interface{}) *Stage {
+//	ret := Stage{
+//		Id:         values["id"].(uint64),
+//		TaskId:     values["task_id"].(uint64),
+//		TypeId:     values["type_id"].(uint64),
+//		TypeName:   values["type_name"].(string),
+//		Status:     values["status"].(int),
+//		QueuePos:   values["queue_pos"].(int),
+//		StatusName: values["status_name"].(string),
+//	}
 
-// Метод получения Stage по id. Пытается извлечь из кеша, если не выходит - обращается к БД
-func StageById(id uint64) (*Stage, error) {
-	if _, exists := stagesCache[id]; !exists {
-		values, err := database.GetStageDataById(id)
-		if err != nil {
-			return nil, err
-		}
-		stagesCache[id] = StageFromParamsMap(values)
-	}
-	return stagesCache[id], nil
-}
+//	return &ret
+//}
 
-func StagesByTaskId(taskId uint64) ([]*Stage, error) {
-	ret := []*Stage{}
-	stagesValues, err := database.GetStageIdsByTaskId(taskId)
-	if err != nil {
-		return nil, err
-	}
-	for _, id := range stagesValues {
-		stage, err := StageById(id)
-		if err != nil {
-			return nil, err
-		}
-		ret = append(ret, stage)
-	}
-	return ret, nil
-}
-
-// SAVE ENTITY INTO DB
-func (stage *Stage) Save() {
-
-}
-
-//
-//FUNCTIONAL METHODS
-//
-
-func (stage *Stage) SetStatus(status int) {
+/*func (stage *Stage) SetStatus(status int) {
 	stage.Status = status
 
 	//Если выполнена задача, то предыдущие также выполнены
@@ -102,12 +56,12 @@ func (stage *Stage) SetStatus(status int) {
 			}
 		}
 	}
-}
+}*/
 
 //
 //API METHODS
 //
-
+/*
 func HttpGetStageById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
@@ -145,4 +99,4 @@ func HttpGetStagesByTask(w http.ResponseWriter, r *http.Request) {
 
 		json.NewEncoder(w).Encode(stages)
 	}
-}
+}*/

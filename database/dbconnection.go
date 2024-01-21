@@ -6,62 +6,54 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
+type DbConnection struct {
+	Settings DbConnectionSettings
+}
 
-func InitDb() error {
-	if db != nil {
-		return nil
-	}
+func (con DbConnection) InitConnection() (*sql.DB, error) {
 	var err error
-	db, err = sql.Open("mysql", "root@tcp(localhost:3306)/teacher_kpi")
+
+	db, err := sql.Open(con.Settings.Dbms, con.Settings.ConString())
 	if err != nil {
 		//Добавить обработчик отсутствия подключения к базе
 		//panic(err)
-		return err
+		return nil, err
 	}
-	return nil
+	return db, nil
 }
 
-func RequestQuery(request string, args ...any) (*sql.Rows, error) {
-	/*if err := InitDb(); err != nil {
-		return nil, err
-	}*/
-
-	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/teacher_kpi")
+func (con DbConnection) RequestQuery(request string, args ...any) (*sql.Rows, error) {
+	db, err := con.InitConnection()
 	if err != nil {
 		return nil, err
 	}
+
+	defer db.Close()
 
 	result, err := db.Query(request, args...)
 
 	if err != nil {
 		//panic(err)
-		db.Close()
 		return nil, err
 	}
 
-	db.Close()
 	return result, nil
 }
 
-func RequestNonQuery(request string, args ...any) (sql.Result, error) {
-	/*if err := InitDb(); err != nil {
-		return err
-	}*/
-
-	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/teacher_kpi")
+func (con DbConnection) RequestNonQuery(request string, args ...any) (sql.Result, error) {
+	db, err := con.InitConnection()
 	if err != nil {
 		return nil, err
 	}
+
+	defer db.Close()
 
 	result, err := db.Exec(request, args...)
 
 	if err != nil {
 		//panic(err)
-		db.Close()
 		return nil, err
 	}
 
-	db.Close()
 	return result, nil
 }
